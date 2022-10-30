@@ -123,7 +123,9 @@ namespace Sandbox
         bool lshiftcmd = false;
         private void Gl_Paint(object sender, PaintEventArgs e)
         {
-            var proc = Process.GetCurrentProcess();
+
+           
+                var proc = Process.GetCurrentProcess();
 
             infoLabel.Text = "Memory: " + proc.PeakPagedMemorySize / 1024 / 1024 + "MB; sim count: " + Form1.SimCount;
             var dir = Camera.CamFrom - Camera.CamTo;

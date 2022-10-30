@@ -13,6 +13,12 @@ using tkQuaternion = OpenTK.Quaternion;
 using System.Threading;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using FxEngine;
+using System.IO;
+using FxEngine.Shaders;
+using FxEngine.Loaders.OBJ;
+using Sandbox.Lib;
+using IkBonePool = Sandbox.Lib.IkBonePool;
 
 namespace Sandbox
 {
@@ -20,7 +26,7 @@ namespace Sandbox
     {
         public Form1()
         {
-            InitializeComponent();            
+            InitializeComponent();
             panel1.Controls.Add(drawer);
             drawer.Dock = DockStyle.Fill;
             drawer.Margin = new Padding(0);
@@ -31,6 +37,29 @@ namespace Sandbox
             drawer.KeyUp += Drawer_KeyUp;
             checkBox5.Checked = drawer.EnableDrawGrid;
             InitPhysics();
+
+            tabControl2.TabPages.RemoveAt(2);
+
+            LoadModels();
+        }
+        Shader ModelDrawShader = new Model3DrawShader("model3.vs", "model3.fs");
+        VaoModel vmod = null;
+
+        public void LoadModels()
+        {
+            string objPath = "";
+            string mtlPath = "";
+
+            Stuff.models.Clear();
+            try
+            {
+                Stuff.models.AddRange(ObjVolume.LoadFromFile(@"models\\ball.obj", Matrix4.Identity));
+            }
+            catch (Exception ex) { }
+          //  var vol = Stuff.models.Last();
+            vmod = new VaoModel();
+
+
         }
 
         private void Drawer_KeyUp(object sender, KeyEventArgs e)
@@ -144,14 +173,97 @@ namespace Sandbox
             DrawObject(ctx, indices.ToArray(), vertices.ToArray(), Stuff.ToTkVector3(box.Position), Stuff.ToTkQuternion(box.Quaternion), box.Tag, ctx.SelectedEntities.Contains(box));
             GL.PopMatrix();
         }
+        public void DrawOdeSphere(Sphere box)
+        {
+            GL.PushMatrix();
+
+            var indices = new List<uint>();
+            var vertices = new List<VertexPositionNormalTexture>();
+
+            int cnt = 0;
+            for (int i = 0; i < 360; i += 15)
+            {
+                for (int j = 0; j < 360; j += 15)
+                {
+                    var xx = box.Radius * Math.Cos(i * Math.PI / 180) * Math.Sin(j * Math.PI / 180);
+                    var yy = box.Radius * Math.Sin(i * Math.PI / 180) * Math.Cos(j * Math.PI / 180);
+                    var z = box.Radius * Math.Cos(j * Math.PI / 180);
+
+                    var j2 = j + 15;
+                    var i2 = i + 15;
+                    var xx1 = box.Radius * Math.Cos(i * Math.PI / 180) * Math.Sin(j2 * Math.PI / 180);
+                    var yy1 = box.Radius * Math.Sin(i * Math.PI / 180) * Math.Cos(j2 * Math.PI / 180);
+                    var z1 = box.Radius * Math.Cos(j2 * Math.PI / 180);
+
+                    var xx2 = box.Radius * Math.Cos(i2 * Math.PI / 180) * Math.Sin(j2 * Math.PI / 180);
+                    var yy2 = box.Radius * Math.Sin(i2 * Math.PI / 180) * Math.Cos(j2 * Math.PI / 180);
+                    var z2 = box.Radius * Math.Cos(j2 * Math.PI / 180);
+
+                    var xx3 = box.Radius * Math.Cos(i2 * Math.PI / 180) * Math.Sin(j * Math.PI / 180);
+                    var yy3 = box.Radius * Math.Sin(i2 * Math.PI / 180) * Math.Cos(j * Math.PI / 180);
+                    var z3 = box.Radius * Math.Cos(j * Math.PI / 180);
+
+                    for (int jj = 0; jj < 6; jj++)
+                    {
+                        indices.Add((uint)indices.Count);
+                    }
+
+                    vertices.Add(new VertexPositionNormalTexture(new tkVector3((float)xx, (float)yy, (float)z), tkVector3.UnitY, Vector2.One));
+                    vertices.Add(new VertexPositionNormalTexture(new tkVector3((float)xx1, (float)yy1, (float)z1), tkVector3.UnitY, Vector2.One));
+                    vertices.Add(new VertexPositionNormalTexture(new tkVector3((float)xx2, (float)yy2, (float)z2), tkVector3.UnitY, Vector2.One));
+                    vertices.Add(new VertexPositionNormalTexture(new tkVector3((float)xx2, (float)yy2, (float)z2), tkVector3.UnitY, Vector2.One));
+                    vertices.Add(new VertexPositionNormalTexture(new tkVector3((float)xx3, (float)yy3, (float)z3), tkVector3.UnitY, Vector2.One));
+                    vertices.Add(new VertexPositionNormalTexture(new tkVector3((float)xx1, (float)yy1, (float)z1), tkVector3.UnitY, Vector2.One));
+
+                }
+            }
+
+
+            DrawObject(ctx, indices.ToArray(), vertices.ToArray(), Stuff.ToTkVector3(box.Position), Stuff.ToTkQuternion(box.Quaternion), box.Tag, ctx.SelectedEntities.Contains(box));
+            GL.PopMatrix();
+        }
         public DrawingContext ctx = new DrawingContext();
+
+        bool first = true;
+
         public void DrawObjects()
         {
             if (!checkBox4.Checked) return;
             Stopwatch sw = Stopwatch.StartNew();
+            if (first)
+            {
+                first = false;
+                ModelDrawShader.Init("model.vs", "model.fs");
+                vmod.ModelInit(Stuff.models.ToArray());
+            }
 
             lock (Stuff.World)
             {
+                if (ball != null)
+                {
+                    if (cameraToRobot)
+                    {
+                        drawer.Camera.CamFrom = new tkVector3(-1500, (float)ball.Position.Y, 500);
+                        drawer.Camera.CamTo = new tkVector3((float)ball.Position.X, (float)ball.Position.Y, 500);
+                    }
+                    if (ball.Position.X > 1500)
+                    {
+                        Ode.Net.Vector3 v3 = new Ode.Net.Vector3(-r.Next(80, 120), r.Next(-10, 10), r.Next(40, 100));
+                        ball.Body.SetLinearVelocity(ref v3);
+                    }
+                    if (ball.Position.X < -1500)
+                    {
+                        Ode.Net.Vector3 v3 = new Ode.Net.Vector3(r.Next(80, 120), r.Next(-10, 10), r.Next(40, 100));
+                        ball.Body.SetLinearVelocity(ref v3);
+                    }
+                    if (ball.Position.Z < -100)
+                    {
+
+                        Stuff.OdeSpace.Remove(ball);
+                        ball = null;
+                    }
+                }
+                
                 foreach (var entity in Stuff.OdeSpace)
                 {
 
@@ -159,7 +271,21 @@ namespace Sandbox
                     {
                         DrawOdeBox(entity as Box);
                     }
+                    if ((entity is Ode.Net.Collision.Sphere))
+                    {
+                        var sh3 = ModelDrawShader as Model3DrawShader;
 
+                        sh3.viewPos = drawer.Camera.CamFrom;
+                        sh3.Model = Matrix4.CreateRotationZ((float)(0 * Math.PI / 180f));
+
+                        GL.PushMatrix();
+                        GL.Translate(entity.Position.X, entity.Position.Y, entity.Position.Z);
+                        double k = 5 * (entity as Sphere).Radius;
+                        GL.Scale(k, k, k);
+                        vmod.DrawVao(ModelDrawShader);
+                        GL.PopMatrix();
+                        //DrawOdeSphere(entity as Sphere);
+                    }
                 }
 
             }
@@ -189,10 +315,10 @@ namespace Sandbox
             Stuff.OdeSpace.Collide(new NearCallback(nearCallback));
         }
 
-        public static Geom CreateOdeSphere()
+        public static Geom CreateOdeSphere(float rad = 1)
         {
-            Ode.Net.Collision.Sphere b = new Ode.Net.Collision.Sphere(1);
-            var a = Mass.CreateSphere(1, 1);
+            Ode.Net.Collision.Sphere b = new Ode.Net.Collision.Sphere(rad);
+            var a = Mass.CreateSphere(1, rad);
             Ode.Net.Body bode = new Body(Stuff.World);
             b.Body = bode;
             bode.Mass = a;
@@ -223,12 +349,12 @@ namespace Sandbox
             for (int i = 0; i < Geom.Collide(geom1, geom2, array); i++)
             {
                 contact.Geometry = array[i];
-                contact.Surface.Mode = (ContactModes.Bounce  | ContactModes.SoftCfm | ContactModes.SoftErp);
+                contact.Surface.Mode = (ContactModes.Bounce | ContactModes.SoftCfm | ContactModes.SoftErp);
                 contact.Surface.SoftCfm = 0.0001f;
                 contact.Surface.SoftErp = 0.2f;
                 contact.Surface.Mu = float.PositiveInfinity;
                 contact.Surface.Bounce = 0.40f;
-                contact.Surface.BounceVelocity = 0.0002f;                
+                contact.Surface.BounceVelocity = 0.0002f;
                 Contact _contact = new Contact(Stuff.World, contact, Stuff.ContactGroup);
                 _contact.Attach(body, body2);
             }
@@ -236,7 +362,7 @@ namespace Sandbox
 
         GlDrawer drawer = new GlDrawer();
         DateTime lastRenderTime = DateTime.Now;
-        
+
         private void toSelectedToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
@@ -252,8 +378,8 @@ namespace Sandbox
 
         public static Geom CreateOdeGround()
         {
-            Ode.Net.Collision.Box b = new Ode.Net.Collision.Box(500, 500, 1);
-            var mass = Mass.CreateBoxTotal(1, 500, 500, 1);
+            Ode.Net.Collision.Box b = new Ode.Net.Collision.Box(2740, 1525, 1);
+            var mass = Mass.CreateBoxTotal(1, 2740, 1525, 1);
             //var a = Mass.CreateBox(0, 25, 25, 1);
 
 
@@ -274,7 +400,7 @@ namespace Sandbox
 
             return b;
         }
-        
+
         public static Color GetRandomColor()
         {
             var vls = Enum.GetValues(typeof(KnownColor));
@@ -291,7 +417,7 @@ namespace Sandbox
             float angle = 0;
             q.ToAxisAngle(out r, out angle);
             GL.Rotate((float)(angle * 180.0f / Math.PI), r);
-                        
+
             if (selected)
             {
                 //DrawBoundingBox(array.Select(z => z.Position).Select(x => new BEPUutilities.Vector3(x.X, x.Y, x.Z)).ToArray());
@@ -367,7 +493,7 @@ namespace Sandbox
                         var vector3 = vv[j + i];
                         var n3 = nv[j + i];
                         var v = vector3;
-                        GL.Vertex3(v.X, v.Y, v.Z);                        
+                        GL.Vertex3(v.X, v.Y, v.Z);
                     }
                     GL.End();
 
@@ -393,6 +519,9 @@ namespace Sandbox
 
             Ode.Net.Body body = new Body(Stuff.World);
             b.Body = body;
+
+
+
             body.Mass = a;
             var tag = new EntityTagInfo();
 
@@ -403,18 +532,24 @@ namespace Sandbox
             Stuff.OdeSpace.Add(b);
 
             b.SetPosition(ref pos);
+            b.Body.Kinematic = true;
             return b;
         }
         private void button2_Click(object sender, EventArgs e)
         {
             CreateOdeBox(new Ode.Net.Vector3(0, 0, 15));
         }
-
+        Sphere ball;
         private void button3_Click(object sender, EventArgs e)
         {
-            var b = CreateOdeSphere();
-            var pos = new Ode.Net.Vector3(0, 0, 15);
-            b.SetPosition(ref pos);
+            lock (Stuff.World)
+            {
+                var b = CreateOdeSphere(20);
+                ball = b as Sphere;
+                var pos = new Ode.Net.Vector3(0, 0, 500);
+                b.SetPosition(ref pos);
+                propertyGrid1.SelectedObject = b.Body;
+            }
         }
 
         private void contextMenuStrip1_Opening(object sender, System.ComponentModel.CancelEventArgs e)
@@ -453,7 +588,7 @@ namespace Sandbox
             }
         }
 
-        public float odeStepTime = 1f / 750f;      
+        public float odeStepTime = 1f / 750f;
         public int core = 2;
         public static int SimCount = 0;
 
@@ -517,9 +652,18 @@ namespace Sandbox
         {
             ctx.Wireframe = checkBox2.Checked;
         }
+        public static List<IkChain> IkChains = new List<IkChain>();
+        public bool AllowIkUpdate = false;
 
         private void timer1_Tick(object sender, EventArgs e)
         {
+            if (AllowIkUpdate)
+            {
+                foreach (var chain in IkChains)
+                {
+                    chain.Update();
+                }
+            }
             drawer.Draw();
         }
 
@@ -527,5 +671,215 @@ namespace Sandbox
         {
             drawer.EnableDrawGrid = checkBox5.Checked;
         }
+
+        private void Button6_Click(object sender, EventArgs e)
+        {
+            timeScale *= 10;
+        }
+
+        private void Button7_Click(object sender, EventArgs e)
+        {
+            timeScale /= 10;
+        }
+
+        private void Button8_Click(object sender, EventArgs e)
+        {
+            var bd = ball;
+            Ode.Net.Vector3 v3 = new Ode.Net.Vector3(100, 0, 100);
+            bd.Body.SetLinearVelocity(ref v3);
+
+        }
+
+        private void Button9_Click(object sender, EventArgs e)
+        {
+            CreateOdeBox(new Ode.Net.Vector3(0, 0, 155), 1, new Ode.Net.Vector3(20, 1525, 150));
+        }
+
+        private void Button10_Click(object sender, EventArgs e)
+        {
+
+            List<OpenTK.Vector3> pnts = new List<OpenTK.Vector3>();
+
+
+            foreach (var vol in Stuff.models)
+            {
+
+
+
+                foreach (var item in vol.faces)
+                {
+                    for (int i = 0; i < item.Vertexes.Count(); i++)
+                    {
+                        var pos = item.Vertexes[i].Position;
+                        pnts.Add(pos);
+                    }
+                }
+            }
+
+            //   FitToPoints(pnts.ToArray(), drawer.Camera);
+        }
+        public static OpenTK.Vector3? InstersectPlaneWithRay(Plane plane, MouseRay ray, bool checkT = true)
+        {
+
+
+            OpenTK.Vector3 l = ray.End - ray.Start;
+            l.Normalize();
+
+            //check point exists 
+            var n = plane.Normal;
+            var d = l.X * n.X + l.Y * n.Y + n.Z * l.Z;
+            var r0n = ray.Start.X * n.X + ray.Start.Y * n.Y + ray.Start.Z * n.Z;
+            if (Math.Abs(d) > 1e-4)
+            {
+                var t0 = -((r0n) + plane.W) / d;
+                if (checkT)
+                {
+                    if (t0 >= 0)
+                    {
+                        return ray.Start + l * (float)t0;
+                    }
+                }
+                else
+                {
+                    return ray.Start + l * (float)t0;
+                }
+            }
+            return null;
+        }
+
+        private void Button11_Click(object sender, EventArgs e)
+        {
+            drawer.Camera.CamFrom = new tkVector3(-2000, 700, 1000);
+            drawer.Camera.CamTo = new tkVector3(0, 0, 300);
+        }
+        bool cameraToRobot = false;
+        private void Button12_Click(object sender, EventArgs e)
+        {
+            cameraToRobot = !cameraToRobot;
+        }
+        public IkChain CreateIkChain(EntityContainer contn, IkBonePool pool)
+        {
+            var ret = new IkChain() { Container = contn, Enable = true };
+            contn.Chains.Add(ret);
+            IkChains.Add(ret);
+
+
+            var chain = IkChains.Last();
+
+            var bn = pool.Bones.First() as IkLineBone;
+            {
+                chain.EndEffector = bn;
+            }
+
+            var prnts = bn.Parent.GetAllParents().ToList();
+            var jj =
+                bn.Parent.Parent.Joints.OfType<IkRevoluteJoint>()
+                    .Where(z => prnts.Contains(z.ConnectionA) && prnts.Contains(z.ConnectionB))
+                    .ToArray();
+            prnts.Add(bn.Parent);
+            jj =
+                bn.Parent.Parent.Joints.OfType<IkRevoluteJoint>()
+                    .Where(z => prnts.Contains(z.ConnectionA) && prnts.Contains(z.ConnectionB))
+                    .ToArray();
+
+            chain.Joints = jj;
+            return ret;
+
+        }
+        private void button13_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "Sandbox robot model (*.srm)|*.srm";
+            if (ofd.ShowDialog() != DialogResult.OK) return;
+
+            var robo = Robot.CreateWholeFromXml(ofd.FileName);
+            //meraLib.Stuff.IkChains.Add(new IkChain() {});
+            //fdr.Skeleton.Bones.First()
+            robo.Skeleton.UpdateHierarchy();
+            var ch1 = CreateIkChain(robo, robo.Skeleton.Bones.First(z => z.Name == "Right-Wrist").Parent);
+            var ch2 = CreateIkChain(robo, robo.Skeleton.Bones.First(z => z.Name == "Left-Wrist").Parent);
+            ch1.Settings.Type = IkTypeEnum.Position3D;
+            ch2.Settings.Type = IkTypeEnum.Position3D;
+            ch1.Settings.Delta = 0.1f;
+            ch2.Settings.Delta = 0.1f;
+
+
+
+
+            var ch3 = CreateIkChain(robo, robo.Skeleton.Bones.First(z => z.Name == "Right-AnkleS").Parent);
+            var ch4 = CreateIkChain(robo, robo.Skeleton.Bones.First(z => z.Name == "Left-AnkleS").Parent);
+            ch3.Settings.Type = IkTypeEnum.Full6D;
+            ch4.Settings.Type = IkTypeEnum.Full6D;
+            ch3.Settings.Delta = 0.1f;
+            ch4.Settings.Delta = 0.1f;
+
+            //UpdateTree();
+            robo.Skeleton.ForwardCalc(OpenTK.Matrix3.Identity);
+            foreach (var ikChain in robo.Chains)
+            {
+                ikChain.Settings.TargetPosition = ikChain.EndEffector.AbsolutePosition;
+            }
+        }
+
+        //public void FitToPoints(OpenTK.Vector3[] pnts, Camera cam)
+        //{
+        //    var matr = Matrix4.CreateRotationZ((float)(0 * Math.PI / 180.0f));
+        //    List<Vector2> vv = new List<Vector2>();
+        //    foreach (var vertex in pnts)
+        //    {
+        //        var p = MouseRay.Project((new OpenTK.Vector4(vertex, 1)).Xyz, cam.ProjectionMatrix, cam.ViewMatrix, matr, drawer.Camera.viewport);
+        //        vv.Add(p.Xy);
+        //    }
+
+        //    //prjs->xy coords
+        //    var minx = vv.Min(z => z.X);
+        //    var maxx = vv.Max(z => z.X);
+        //    var miny = vv.Min(z => z.Y);
+        //    var maxy = vv.Max(z => z.Y);
+
+
+        //    var dx = (maxx - minx) * 1.2f;
+        //    var dxadd = dx - (maxx - minx);
+
+        //    var dy = (maxy - miny) * 1.2f;
+        //    var dyadd = dy - (maxy - miny);
+
+        //    var cx = dx / 2;
+        //    var cy = dy / 2;
+        //    var dir = cam.CamTo - cam.CamFrom;
+        //    //center back to 3d
+
+        //    var mr = new MouseRay(cx + minx - dxadd / 2, cy + miny - dyadd / 2, cam);
+        //    var v0 = mr.Start;
+
+        //    /*
+        //     * 1. взять две плоскости верхнюю и нижнюю от модели и через них луч пересечь. и взять эти точки я думаю. тогда норм будет с far
+        //     */
+
+        //    var bottom = pnts.OrderBy(z => z.Z).First();
+        //    var toppest = pnts.OrderBy(z => z.Z).Last();
+        //    var pl1 = Plane.FromPoints(bottom, bottom + new tkVector3(10, 0, 0), bottom + new OpenTK.Vector3(0, 10, 0));
+        //    var pl2 = Plane.FromPoints(toppest, toppest + new tkVector3(10, 0, 0), toppest + new OpenTK.Vector3(0, 10, 0));
+
+
+        //    var inter1 = InstersectPlaneWithRay(pl1, mr, false);
+        //    var inter2 = InstersectPlaneWithRay(pl2, mr, false);
+
+        //    cam.CamFrom = v0;
+        //    cam.CamTo = cam.CamFrom + dir;
+        //    cam.CamFrom = inter1.Value;
+        //    cam.CamTo = inter2.Value;
+        //    //cam.OrthoWidth = 500;
+        //    //cam.OrthoWidth = Math.Max(dx, dy);
+        //    var aspect = drawer.Width / (float)(drawer.Height);
+
+        //    dx /= drawer.Width;
+        //    dx *= drawer.Camera.OrthoWidth;
+        //    dy /= drawer.Height;
+        //    dy *= drawer.Camera.OrthoWidth;
+
+        //   drawer.Camera.OrthoWidth = Math.Max(dx, dy);
+
+        //}
     }
 }

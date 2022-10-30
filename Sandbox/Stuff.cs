@@ -1,4 +1,5 @@
-﻿using Ode.Net;
+﻿using FxEngine.Loaders.OBJ;
+using Ode.Net;
 using Ode.Net.Collision;
 using Ode.Net.Joints;
 using System.Collections.Generic;
@@ -7,6 +8,8 @@ namespace Sandbox
 {
     public class Stuff
     {
+        public static List<ObjVolume> models = new List<ObjVolume>();
+
         public static SandboxEnvironment CurrentEnvironment;
         
         public static List<Geom> SkipBroadPhase = new List<Geom>();

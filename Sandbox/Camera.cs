@@ -6,6 +6,10 @@ namespace Sandbox
 {
     public class Camera
     {
+        public float OrthoWidth { get; set; } = 1000;
+        public float OrthoHeight { get; set; }
+        public float Fov { get; set; } = 60;
+        public float zoom = 1;
         public int Id { get; set; }
         public string Name { get; set; }
         public Vector3 CamFrom { get; set; } = new Vector3(70, 70, 70);
