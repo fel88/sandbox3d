@@ -1,0 +1,302 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\OpenCvSharp4.runtime.win.4.6.0.20220608\build\net48\OpenCvSharp4.runtime.win.props" Condition="Exists('..\packages\OpenCvSharp4.runtime.win.4.6.0.20220608\build\net48\OpenCvSharp4.runtime.win.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D022BBB5-9FF0-42AF-8656-AF3D3C250B96}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>RenderTool</RootNamespace>
+    <AssemblyName>RenderTool</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>
+    </ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="OpenCvSharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6adad1e807fea099, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenCvSharp4.4.6.0.20220608\lib\net48\OpenCvSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenCvSharp.Extensions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6adad1e807fea099, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenCvSharp4.Extensions.4.6.0.20220608\lib\net48\OpenCvSharp.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenCvSharp.WpfExtensions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenCvSharp4.WpfExtensions.4.6.0.20220608\lib\net48\OpenCvSharp.WpfExtensions.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK, Version=3.3.3.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTK.3.3.3\lib\net20\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK.GLControl, Version=3.3.3.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTK.GLControl.3.3.3\lib\net20\OpenTK.GLControl.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing.Common, Version=4.0.0.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Drawing.Common.5.0.3\lib\net461\System.Drawing.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AboutBox1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AboutBox1.Designer.cs">
+      <DependentUpon>AboutBox1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AbstractDrawer.cs" />
+    <Compile Include="AbstractTexture.cs" />
+    <Compile Include="CameraBitmapSource.cs" />
+    <Compile Include="DrawVertex.cs" />
+    <Compile Include="FlatTextureItem.cs" />
+    <Compile Include="ICommandsContainer.cs" />
+    <Compile Include="Model.cs" />
+    <Compile Include="RarZipConverter.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RarZipConverter.Designer.cs">
+      <DependentUpon>RarZipConverter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SceneStorableObjectAttribute.cs" />
+    <Compile Include="SceneTexture.cs" />
+    <Compile Include="Blank.cs" />
+    <Compile Include="BlankEditorDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BlankEditorDialog.Designer.cs">
+      <DependentUpon>BlankEditorDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BlankEditorMode.cs" />
+    <Compile Include="BlankModel.cs" />
+    <Compile Include="IBitmapSource.cs" />
+    <Compile Include="CameraViewManager.cs" />
+    <Compile Include="Camera_Movement.cs" />
+    <Compile Include="AbstractDrawingContext.cs" />
+    <Compile Include="DrawPolygon.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="Helpers.cs" />
+    <Compile Include="IAppContainer.cs" />
+    <Compile Include="ISetTexture.cs" />
+    <Compile Include="ITextureLoad.cs" />
+    <Compile Include="PBRLight.cs" />
+    <Compile Include="PBRModel.cs" />
+    <Compile Include="PBRTextureItem.cs" />
+    <Compile Include="PolyBool.cs" />
+    <Compile Include="DefaultCameraViewManager.cs" />
+    <Compile Include="DrawingContext.cs" />
+    <Compile Include="EventWrapperGlControl.cs" />
+    <Compile Include="EventWrapperPictureBox.cs" />
+    <Compile Include="FaceItem.cs" />
+    <Compile Include="FaceItem2.cs" />
+    <Compile Include="FaceVertex.cs" />
+    <Compile Include="Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1.Designer.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FxShader.cs" />
+    <Compile Include="IDrawingEnvironment.cs" />
+    <Compile Include="IShader.cs" />
+    <Compile Include="Material.cs" />
+    <Compile Include="MaterialStuff.cs" />
+    <Compile Include="mdi.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="mdi.Designer.cs">
+      <DependentUpon>mdi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MessageFilter.cs" />
+    <Compile Include="Model3DrawShader.cs" />
+    <Compile Include="ModelPathItem.cs" />
+    <Compile Include="MouseRay.cs" />
+    <Compile Include="ObjModel.cs" />
+    <Compile Include="ObjVolume.cs" />
+    <Compile Include="Camera.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RenderHelpers.cs" />
+    <Compile Include="ResourceFile.cs" />
+    <Compile Include="Scene.cs" />
+    <Compile Include="SceneObject.cs" />
+    <Compile Include="Shader.cs" />
+    <Compile Include="SimpleModel.cs" />
+    <Compile Include="Stuff.cs" />
+    <Compile Include="TempVertex.cs" />
+    <Compile Include="TextureDescriptor.cs" />
+    <Compile Include="TexturePool.cs" />
+    <Compile Include="TexturesManager.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TexturesManager.Designer.cs">
+      <DependentUpon>TexturesManager.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TexturesPool.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TexturesPool.Designer.cs">
+      <DependentUpon>TexturesPool.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ToolEvent.cs" />
+    <Compile Include="UiEvent.cs" />
+    <Compile Include="UiMouseEvent.cs" />
+    <Compile Include="UiMouseEventType.cs" />
+    <Compile Include="offscreenRender.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="offscreenRender.Designer.cs">
+      <DependentUpon>offscreenRender.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VaoModel.cs" />
+    <Compile Include="VaoModelItem.cs" />
+    <Compile Include="vec3EditorDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="vec3EditorDialog.Designer.cs">
+      <DependentUpon>vec3EditorDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Volume.cs" />
+    <EmbeddedResource Include="AboutBox1.resx">
+      <DependentUpon>AboutBox1.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BlankEditorDialog.resx">
+      <DependentUpon>BlankEditorDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="mdi.resx">
+      <DependentUpon>mdi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <EmbeddedResource Include="RarZipConverter.resx">
+      <DependentUpon>RarZipConverter.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TexturesManager.resx">
+      <DependentUpon>TexturesManager.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TexturesPool.resx">
+      <DependentUpon>TexturesPool.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="offscreenRender.resx">
+      <DependentUpon>offscreenRender.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="vec3EditorDialog.resx">
+      <DependentUpon>vec3EditorDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="OpenTK.dll.config" />
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="shaders\model.vs" />
+    <EmbeddedResource Include="shaders\model2.vs" />
+    <EmbeddedResource Include="shaders\model3.vs" />
+    <EmbeddedResource Include="shaders\pbr.instanced.fs" />
+    <EmbeddedResource Include="shaders\pbr.instanced.vs" />
+    <EmbeddedResource Include="shaders\flat.fs" />
+    <EmbeddedResource Include="shaders\flat.vs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="shaders\1.2.pbr.fs" />
+    <EmbeddedResource Include="shaders\1.2.pbr.vs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="shaders\model.fs" />
+    <EmbeddedResource Include="shaders\model2.fs" />
+    <EmbeddedResource Include="shaders\model3.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Triangle\Triangle.csproj">
+      <Project>{5f8c19e6-a77f-4703-bf4f-a6d972d08fbc}</Project>
+      <Name>Triangle</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="textures\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\OpenCvSharp4.runtime.win.4.6.0.20220608\build\net48\OpenCvSharp4.runtime.win.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\OpenCvSharp4.runtime.win.4.6.0.20220608\build\net48\OpenCvSharp4.runtime.win.props'))" />
+  </Target>
+</Project>
