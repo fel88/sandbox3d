@@ -169,7 +169,6 @@ namespace RenderTool
             {
                 if (line.StartsWith("o ")) // object def
                 {
-
                     if (vol != null)
                     {
                         //LoadVol(vol, faces, verts, vertn, texs, mat, vstart);

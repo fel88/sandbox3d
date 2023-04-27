@@ -82,6 +82,7 @@ namespace RenderTool
         {
             GL.Uniform1(GL.GetUniformLocation(ID, v1), v2);
         }
+        
         internal void setFloat(string v1, float v2)
         {
             GL.Uniform1(GL.GetUniformLocation(ID, v1), v2);

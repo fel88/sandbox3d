@@ -146,7 +146,9 @@ namespace RenderTool
                 _inited = true;
             }
 
-            if (!_inited) return;
+            if (!_inited) 
+                return;
+
             if (shader != null)
             {
                 shader.use();
@@ -180,14 +182,28 @@ namespace RenderTool
 
         public override void InitResources()
         {
-            if (_inited) return;
+            if (_inited) 
+                return;
 
             shader = new Shader("flat.vs", "flat.fs");
 
             shader.use();
             shader.setInt("albedoMap", 0);
+            shader.setInt("useAlpha", 0);
 
             base.InitResources();
+        }
+
+        bool _useAlpha = false;
+        public bool UseAlpha
+        {
+            get => _useAlpha;
+            set
+            {
+                _useAlpha = value;
+                shader.use();
+                shader.setInt("useAlpha", value ? 1 : 0);
+            }
         }
 
         AbstractTexture texture;
