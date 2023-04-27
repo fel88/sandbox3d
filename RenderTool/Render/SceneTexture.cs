@@ -37,7 +37,7 @@ namespace RenderTool
         int cubeVBO = 0;
 
         int pcnt = 0;
-        public ICommand[] Commands => new ICommand[] {  new AddSceneTextureCommand(), new SetFlatTextureToBlankCommand(), new GenerateChessboardTextureCommand() };
+        public ICommand[] Commands => new ICommand[] { new AddSceneTextureCommand(), new SetFlatTextureToBlankCommand(), new GenerateChessboardTextureCommand() };
         void renderVAO()
         {
 
@@ -114,11 +114,26 @@ namespace RenderTool
             }
         }
 
+        public Vector3 _normal;
+        public Vector3 Normal
+        {
+            get => _normal;
+            set
+            {
+                _normal = value.Normalized();
+                var axis = Vector3.Cross(Vector3.UnitZ, _normal);
+                var ang = (float)Math.Acos(Vector3.Dot(Vector3.UnitZ, _normal) / 1f);
+                //Matrix = new Matrix4(_normal.X, 0, 0, 0, 0, _normal.Y, 0, 0, 0, 0, _normal.Z, 0, 0, 0, 0, 1);
+                Matrix = Matrix4.CreateFromAxisAngle(axis, ang);
+
+            }
+        }
+
         public override void Draw(IDrawingEnvironment denv)
         {
             var asyncPreLoadFinished = texture.PreLoadFinished;
             if (!asyncPreLoadFinished) return;
-            
+
             texture.Load();
 
             /*if (!texture.Loaded)
@@ -180,9 +195,9 @@ namespace RenderTool
         public override void RestoreXml(XElement sb)
         {
             InitResources();
-            
+
             if (sb.Attribute("visible") != null)
-                Visible = bool.Parse(sb.Attribute("visible").Value);            
+                Visible = bool.Parse(sb.Attribute("visible").Value);
 
             Id = int.Parse(sb.Attribute("id").Value);
             Name = (sb.Attribute("name").Value);
@@ -226,7 +241,7 @@ namespace RenderTool
 
         public override void StoreXml(StringBuilder sb)
         {
-            sb.AppendLine($"<sceneTexture id=\"{Id}\"  visible=\"{Visible}\" name=\"{Name}\"  pos=\"{Position.X};{Position.Y};{Position.Z}\" texture=\"{texture.OriginFilePath}\" scale=\"{Scale}\" scaleY=\"{ScaleY}\" scaleZ=\"{ScaleZ}\" rotationZ=\"{RotateZ}\" >");           
+            sb.AppendLine($"<sceneTexture id=\"{Id}\"  visible=\"{Visible}\" name=\"{Name}\"  pos=\"{Position.X};{Position.Y};{Position.Z}\" texture=\"{texture.OriginFilePath}\" scale=\"{Scale}\" scaleY=\"{ScaleY}\" scaleZ=\"{ScaleZ}\" rotationZ=\"{RotateZ}\" >");
 
             sb.AppendLine("</sceneTexture>");
         }
@@ -236,12 +251,12 @@ namespace RenderTool
             if (texture != null)
             {
                 if (TexturePool.UnloadOnAssign)
-                {                    
+                {
                     texture.Unload();
                 }
             }
             texture = t;
-            t.Load();            
+            t.Load();
         }
 
         public void LoadTexture(AbstractTexture tex)
@@ -269,7 +284,7 @@ namespace RenderTool
                 bmp.Save("chessboard.temp.jpg");
                 ft.StartAsyncLoad("chessboard.temp.jpg");
 
-                (sender.Sender as SceneTexture).SetTexture(ft);                
+                (sender.Sender as SceneTexture).SetTexture(ft);
             }
         }
         public class AddSceneTextureCommand : ICommand
@@ -296,6 +311,6 @@ namespace RenderTool
             }
         }
     }
-   
+
 }
 
