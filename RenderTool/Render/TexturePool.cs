@@ -27,18 +27,7 @@ namespace RenderTool
 
             if (!File.Exists("defaultFlatTexture.jpg"))
             {
-                Bitmap bmp = new Bitmap(256, 256);
-                var gr = Graphics.FromImage(bmp);
-                gr.Clear(Color.Blue);
-                var w = bmp.Width / 8;
-                for (int i = 0; i < 8; i++)
-                {
-                    for (int j = 0; j < 8; j++)
-                    {
-                        gr.FillRectangle((i + j) % 2 == 0 ? Brushes.White : Brushes.DarkBlue, i * w, j * w, w, w);
-                    }
-                }
-
+                var bmp = Helpers.CreateChessboardBitmap(8, 8);
                 bmp.SetPixel(0, 0, Color.Green);
                 bmp.Save("defaultFlatTexture.jpg");
             }

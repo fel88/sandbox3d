@@ -2,6 +2,7 @@
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -36,7 +37,7 @@ namespace RenderTool
         int cubeVBO = 0;
 
         int pcnt = 0;
-        public ICommand[] Commands => new ICommand[] {  new AddSceneTextureCommand(), new SetFlatTextureToBlankCommand() };
+        public ICommand[] Commands => new ICommand[] {  new AddSceneTextureCommand(), new SetFlatTextureToBlankCommand(), new GenerateChessboardTextureCommand() };
         void renderVAO()
         {
 
@@ -255,6 +256,20 @@ namespace RenderTool
                 tm.Init((sender.Sender as ITextureLoad), sender.Form.Scene.Pool, true);
                 tm.TopMost = true;
                 tm.Show();
+            }
+        }
+        public class GenerateChessboardTextureCommand : ICommand
+        {
+            public void Execute(CommandEnvironment sender)
+            {
+                var ft = new FlatTextureItem();
+                sender.Form.Scene.Pool.Textures.Add(ft);
+                var bmp = Helpers.CreateChessboardBitmap(10, 7);
+                bmp.SetPixel(0, 0, Color.Green);
+                bmp.Save("chessboard.temp.jpg");
+                ft.StartAsyncLoad("chessboard.temp.jpg");
+
+                (sender.Sender as SceneTexture).SetTexture(ft);                
             }
         }
         public class AddSceneTextureCommand : ICommand

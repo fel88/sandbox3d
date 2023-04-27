@@ -7,7 +7,7 @@ using System.Windows.Forms;
 namespace RenderTool
 {
     public static class Helpers
-    {        
+    {
         public static double NextDouble(this Random r, double min, double max)
         {
             var diap = max - min;
@@ -65,6 +65,23 @@ namespace RenderTool
                     c = !c;
             }
             return c;
+        }
+
+        internal static Bitmap CreateChessboardBitmap(int rows, int cols, int w = 32)
+        {
+            Bitmap bmp = new Bitmap(rows * w, cols * w);
+            var gr = Graphics.FromImage(bmp);
+            gr.Clear(Color.Black);
+
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    gr.FillRectangle((i + j) % 2 == 0 ? Brushes.White : Brushes.Black, i * w, j * w, w, w);
+                }
+            }
+
+            return bmp;
         }
     }
 }
